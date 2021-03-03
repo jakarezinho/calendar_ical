@@ -1,0 +1,1 @@
+const ical = require('node.ical');

@@ -1,0 +1,172 @@
+<html>
+
+<head>
+    <!-- Note this code is pretty fugly, it needs to be rewritten -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="dist/css/hotel-datepicker.css">
+    <style>
+        .d_dispo {
+
+            display: none;
+
+
+        }
+
+        .dis {
+            background-color: chocolate;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="demo__item">
+        <h2>Escolher uma data</h2>
+        <div class="demo__input">
+            <input type="text" id="demo11" value="">
+
+        </div>
+     
+
+        <div class="info">
+
+        </div>
+
+        <div class="d_dispo dis" id="dv">
+            
+               <p id="sem"></p>
+            <ul id="casas_dispo"></ul>
+            <p id="p_dispo"></p>
+        </div>
+    </div>
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fecha@4.2.0/lib/fecha.umd.min.js"></script>
+    <script type="text/javascript" src="dist/js/hotel-datepicker.js"></script>
+    <script>
+
+        const casas = [{
+            name: "casa1",
+            file: 'https://calendar.google.com/calendar/ical/9dikuetv8pp21eg6cmibugjh58%40group.calendar.google.com/public/basic.ics'
+        }, {
+            name: "casa2",
+            file: 'https://calendar.google.com/calendar/ical/uur26q8p5e8o60heh8ph91r44g%40group.calendar.google.com/public/basic.ics'
+        }, {
+            name: 'casa3',
+            file: 'https://calendar.google.com/calendar/ical/ao793fi4d8q4p4d7l99sq48beo%40group.calendar.google.com/public/basic.ics'
+        }];
+        let input = document.getElementById('demo11');
+        let infos_noites = document.querySelector('.info');
+        let dd = document.querySelector('#dv')
+        let bt = document.querySelector('#dispo')
+        let liste_dispo = document.querySelector('#casas_dispo')
+        let sem = document.querySelector('#sem')
+        let l = []
+
+
+        console.log(dd)
+
+
+        function en_date() {
+            let d1 = input.value
+            let entrada = d1.slice(0, d1.indexOf("-"));
+            let saida = d1.slice(d1.indexOf("-") + 1);
+            console.log('data de entrada ' + entrada, 'saida' + saida)
+            return [entrada, saida]
+
+
+        }
+        /////// reformata data ////////
+        function reformatDateString(s) {
+            let b = s.split(/\D/);
+            return b.reverse().join('-');
+        }
+
+        console.log(reformatDateString('28/12/2020')); // 2014-12-25
+        ////// function cherche casas ////////////
+        function cherche(casas, entrada, saida) {
+
+            casas.forEach(function (casas) {
+                const formattedFormData = {
+                    entrada: entrada,
+                    saida: saida,
+                    file: casas.file,
+                    casa: casas.name
+                }
+
+                postData(formattedFormData);
+
+            });
+
+        }
+
+        ////datapicker///
+        let datepicker = new HotelDatepicker(input, {
+            format: 'DD/MM/YYYY',
+            hoveringTooltip: function (nights, startTime, hoverTime) {
+
+                console.log(dd)
+                infos_noites.innerHTML = nights > 1 ? '<p>escolheu uma estadis de ' + nights + 'Noites »</p>' : ' <p>escolheu uma estadia de' + nights + '  Noite</p>'
+
+            },
+            onSelectRange: function () {
+                sem.innerHTML = ''
+                liste_dispo.innerHTML = ''
+                l = []
+
+                console.log('Date rage selected!')
+
+                cherche(casas, reformatDateString(en_date()[0].trim()), reformatDateString(en_date()[1].trim()))
+                datepicker.close()
+                dd.classList.remove('d_dispo')
+            }
+
+        })
+        //datepicker.open();
+
+        ///////////function cheche date /////
+        async function postData(formattedFormData) {
+
+            const response = await fetch(
+                'cherche.php',
+                {
+                    method: 'POST',
+
+                    body: JSON.stringify(formattedFormData),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                },
+
+            );
+            const data = await response.json();
+            if(response.ok){console.log('ok')}
+            if (data.message) {
+                let list = document.createElement('li')
+                list.innerHTML = data.message
+                liste_dispo.appendChild(list)
+
+            }
+
+            l.push(li())
+            console.log(l)
+            const result = l.filter(i => i === undefined).length;
+            console.log('number of the found elements: ' + result);
+            if (result > 2) { sem.innerHTML = 'Sem alojamentos disponiveis' }
+
+        }
+
+        /////// compte li dates/////
+        function li() {
+            let lis = liste_dispo.getElementsByTagName('li')
+            for (let i = 0; i <= lis.length - 1; i++) {
+                return lis[i]
+
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

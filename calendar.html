@@ -1,0 +1,75 @@
+<html>
+
+<head>
+  <!-- Note this code is pretty fugly, it needs to be rewritten -->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href='/core/main.css' rel='stylesheet' />
+  <link href='/daygrid/main.css' rel='stylesheet' />
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .container{
+     margin: 20px;
+    }
+  </style>
+
+  <script src='/core/main.js'></script>
+  <script src='/daygrid/main.js'></script>
+  <script src='/interaction/main.js'></script>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var calendarEl = document.getElementById('calendar');
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        plugins: ['dayGrid', 'interaction'],
+        selectable: true,
+        unselectAuto: true,
+        timeZone: 'local',
+        //showNonCurrentDates: true,
+        eventSources: [
+
+          {
+            url: 'index3.php?casa=FILE1', // use the `url` property
+            color: 'yellow',    // an option!
+            textColor: 'black',
+            editable: false, // an option!
+          },
+          {
+            url: 'index3.php?casa=FILE2', // use the `url` property
+            color: 'green',    // an option!
+            textColor: 'black',
+            editable: false, // an option!
+          },
+
+          // any other sources...
+
+        ],
+        dateClick: function (info) {
+          alert('clicked ' + info.dateStr);
+        },
+        select: function (info) {
+          alert('selected ' + info.startStr + ' to ' + info.endStr);
+        }
+
+      });
+
+      calendar.render();
+    });
+
+
+
+  </script>
+
+</head>
+
+<body>
+  <div id='calendar' class="container"></div>
+
+</body>
+
+</html>

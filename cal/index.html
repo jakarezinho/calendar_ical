@@ -1,0 +1,135 @@
+<html>
+
+<head>
+	<!-- Note this code is pretty fugly, it needs to be rewritten -->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" type="text/css" href="dist/css/hotel-datepicker.css">
+	<style>
+		.d_dispo {
+
+			display: none;
+
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="demo__item">
+		<h2>Escolher uma data</h2>
+		<div class="demo__input">
+			<input type="text" id="demo11" value="">
+		
+		</div>
+		<div class="info">
+
+		</div>
+		<div class="d_dispo" id="dv">
+			<p>dates</p>
+			<button id="dispo"> get date</button>
+		</div>
+	</div>
+	</script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fecha@4.2.0/lib/fecha.umd.min.js"></script>
+	<script type="text/javascript" src="dist/js/hotel-datepicker.js"></script>
+	<script>
+		var input = document.getElementById('demo11');
+		var infos_noites = document.querySelector('.info');
+		var dd = document.querySelector('#dv')
+		var bt = document.querySelector('#dispo')
+
+		console.log(dd)
+
+
+
+
+   //////////////// Function calendario ///////////
+		async function calend(calendario) {
+
+			const formattedFormData = {
+			calendario: calendario,
+
+			}
+
+			const response = await fetch(
+				'../calendar_api.php',
+				{
+					method: 'POST',
+
+					body: JSON.stringify(formattedFormData)
+				}
+
+			);
+			const data = await response.text();
+
+			var datepicker = new HotelDatepicker(input, {
+				disabledDates: JSON.parse(data),
+				format: 'DD/MM/YYYY',
+				hoveringTooltip: function (nights, startTime, hoverTime) {
+					dd.classList.remove('d_dispo')
+					console.log(dd)
+					infos_noites.innerHTML = nights > 1 ? '<p>escolheu uma estadis de ' + nights + 'Noites »</p>' : ' <p>escolheu uma estadia de' + nights + '  Noite</p>'
+
+				}
+
+			})
+			//datepicker.open();
+		}
+
+		input.addEventListener('afterClose', function () {
+			en_date()
+		}, false);
+
+/////////////////// display date ///////////////
+
+		function en_date() {
+			var d1 = input.value
+			var entrada = d1.slice(0, d1.indexOf("-"));
+			var saida = d1.slice(d1.indexOf("-") + 1);
+			console.log('data de entrada ' + entrada, 'saida' + saida)
+
+		}
+
+
+
+
+
+
+		/*
+		function get(data){
+  var datepicker = new HotelDatepicker(input, {
+	disabledDates:JSON.parse(data),
+
+  })
+ 
+	
+
+		}
+
+	function calend () {
+ fetch('../index5.php')
+.then((resp) => resp.text()) // Transform the data into json
+.then(function(data) {
+	console.log(JSON.parse(data))
+	get(data)
+  // Create and append the li's to the ul
+});
+
+   
+};
+*/
+		calend("https://calendar.google.com/calendar/ical/uur26q8p5e8o60heh8ph91r44g%40group.calendar.google.com/public/basic.ics");
+
+
+
+	</script>
+
+
+
+
+
+
+</body>
+
+</html>
